@@ -2,37 +2,47 @@
 
 const fetch = require("node-fetch");
 const signalR = require("@microsoft/signalr");
-const util = require("util");
-const exec = util.promisify(require('child_process').exec);
+const { networkInterfaces } = require('os');
 
 const host = "https://bullapp.online/hub";
 
-async function get_username_id(username) {
-    const { stdout, stderr } = await exec('python3 launcher.py ' + username);
-    if (stderr) {
-        console.error(`error: ${stderr}`);
-        return -1;
-    }
-    let strs = stdout.split("\n");
-    for (const str of strs) {
-        if(str.includes('Username')) {
-            const exclude = 'Username ID is: ';
-            const index = str.indexOf(exclude);
-            const id = str.substring(index + exclude.length).trim();
-            return parseInt(id);
+function getMyIp() {
+    const nets = networkInterfaces();
+    const results = Object.create(null); // Or just '{}', an empty object
+
+    for (const name of Object.keys(nets)) {
+        for (const net of nets[name]) {
+            // Skip over non-IPv4 and internal (i.e. 127.0.0.1) addresses
+            // 'IPv4' is in Node <= 17, from 18 it's a number 4 or 6
+            const familyV4Value = typeof net.family === 'string' ? 'IPv4' : 4
+            if (net.family === familyV4Value && !net.internal) {
+                if (!results[name]) {
+                    results[name] = [];
+                }
+                results[name].push(net.address);
+            }
         }
     }
-    return -1;
+
+    if(Object.prototype.hasOwnProperty.call(results, 'en0')) {
+        return results['en0'];
+    }
+    else if(Object.prototype.hasOwnProperty.call(results, 'eth0')) {
+        return results['eth0'];
+    }
+
+    return "-1";
 }
 
-async function get_id_by_username(username) {
-    const id = await fetch('http://localhost:8080/username/' + username).then(response => response.json());
+async function getIdByUsername(username) {
+    const ip = getMyIp();
+    const id = await fetch('http://' + ip + ':8080/username/' + username).then(response => response.json());
     return id;
 }
 
-async function get_proxy_by_username(username) {
+async function getProxyByUsername(username) {
     try {
-        const proxy = await fetch('http://localhost:8080/proxy/' + username).then(response => response.json());
+        const proxy = await fetch('http://' + getMyIp() + ':8080/proxy/' + username).then(response => response.json());
         return proxy;
     } catch (e) {
         console.error(e);
@@ -290,13 +300,13 @@ class Miner {
 
     async run() {
         console.log('%s | Starting miner', this.username)
-        const id = await get_id_by_username(this.username);
+        const id = await getIdByUsername(this.username);
         if(id < 0) {
             console.error('Cannot get username %s id, exiting', this.username);
             return;
         }
 
-        const proxy = await get_proxy_by_username(this.username);
+        const proxy = await getProxyByUsername(this.username);
         if (typeof proxy === 'string' || proxy instanceof String) {
             console.log("%s | Proxy not found for account", this.username)
         }
