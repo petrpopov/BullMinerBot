@@ -1,3 +1,4 @@
+import json
 import os
 import glob
 import asyncio
@@ -37,6 +38,7 @@ async def get_username_id(username: str):
     launcher = current_app.config['launcher']
     client, proxy = launcher.get_client_and_proxy(username)
     if not client:
+        # refresh
         launcher.tasks = launcher.get_tasks()
         client, proxy = launcher.get_client_and_proxy(username)
         if not client:
@@ -46,6 +48,33 @@ async def get_username_id(username: str):
     username_ids[username] = tg_id
     return str(tg_id)
 
+
+@app.route('/proxy/<username>')
+def get_proxy_for_username(username: str):
+    if not username:
+        return "Provide username!"
+
+    launcher = current_app.config['launcher']
+    client, proxy = launcher.get_client_and_proxy(username)
+    if not client:
+        # refresh
+        launcher.tasks = launcher.get_tasks()
+        client, proxy = launcher.get_client_and_proxy(username)
+        if not client:
+            return "-1"
+
+    if not proxy:
+        return "-1"
+
+    proxy = Proxy.from_str(proxy)
+    proxy_dict = dict(
+        scheme=proxy.protocol,
+        hostname=proxy.host,
+        port=proxy.port,
+        username=proxy.login,
+        password=proxy.password
+    )
+    return json.dumps(proxy_dict)
 
 class Launcher:
     def __init__(self):

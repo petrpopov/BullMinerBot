@@ -30,6 +30,16 @@ async function get_id_by_username(username) {
     return id;
 }
 
+async function get_proxy_by_username(username) {
+    try {
+        const proxy = await fetch('http://localhost:8080/proxy/' + username).then(response => response.json());
+        return proxy;
+    } catch (e) {
+        console.error(e);
+        return "-1";
+    }
+}
+
 const PHASES = {
     CLAIM: 'CLAIM',
     DAILY: 'DAILY',
@@ -284,6 +294,15 @@ class Miner {
         if(id < 0) {
             console.error('Cannot get username %s id, exiting', this.username);
             return;
+        }
+
+        const proxy = await get_proxy_by_username(this.username);
+        if (typeof proxy === 'string' || proxy instanceof String) {
+            console.log("%s | Proxy not found for account", this.username)
+        }
+        else {
+            const proxyString = proxy.scheme + "://" + proxy.hostname + ":" + proxy.port;
+            console.log("%s | Proxy not implemented", this.username);
         }
 
         let self = this;
