@@ -36,13 +36,13 @@ function getMyIp() {
 
 async function getIdByUsername(username) {
     const ip = getMyIp();
-    const id = await fetch('http://' + ip + ':8080/username/' + username).then(response => response.json());
+    const id = await fetch('http://127.0.0.1:8080/username/' + username).then(response => response.json());
     return id;
 }
 
 async function getProxyByUsername(username) {
     try {
-        const proxy = await fetch('http://' + getMyIp() + ':8080/proxy/' + username).then(response => response.json());
+        const proxy = await fetch('http://127.0.0.1:8080/proxy/' + username).then(response => response.json());
         return proxy;
     } catch (e) {
         console.error(e);
