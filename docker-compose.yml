@@ -1,0 +1,11 @@
+version: '3'
+services:
+  bot:
+    container_name: 'BullRunMinerBot'
+    build:
+      context: .
+    stop_signal: SIGINT
+    restart: unless-stopped
+    command: "supervisord -c /app/service_script.conf"
+    volumes:
+      - .:/app
