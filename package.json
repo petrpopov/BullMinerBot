@@ -14,5 +14,8 @@
     "await-spawn": "^4.0.2",
     "dotenv": "^16.4.5",
     "metacall": "^0.4.3"
+  },
+  "devDependencies": {
+    "@types/node-fetch": "^2.6.11"
   }
 }
