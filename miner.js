@@ -36,7 +36,9 @@ function getMyIp() {
 
 async function getIdByUsername(username) {
     const ip = getMyIp();
+    console.log('%s | Getting username id', username);
     const id = await fetch('http://127.0.0.1:8080/username/' + username).then(response => response.json());
+    console.log('%s | Username %s id is', username, username, id);
     return id;
 }
 
@@ -299,7 +301,7 @@ class Miner {
     }
 
     async run() {
-        console.log('%s | Starting miner', this.username)
+        console.log('%s | Starting miner', this.username);
         const id = await getIdByUsername(this.username);
         if(id < 0) {
             console.error('Cannot get username %s id, exiting', this.username);
