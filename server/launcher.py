@@ -32,6 +32,7 @@ async def get_username_id(username: str):
     if not username:
         return "Provide username!"
 
+    logger.info(f"Trying to get ID for username {username}")
     if username_ids and username_ids.get(username):
         return str(username_ids.get(username))
 
@@ -44,8 +45,11 @@ async def get_username_id(username: str):
         if not client:
             return "-1"
 
-    tg_id = await launcher.get_tg_id(client, username, proxy)
-    username_ids[username] = tg_id
+    try:
+        tg_id = await launcher.get_tg_id(client, username, proxy)
+        username_ids[username] = tg_id
+    except Exception as e:
+        return "-1"
     return str(tg_id)
 
 
@@ -177,7 +181,9 @@ class Launcher:
         except InvalidSession as error:
             raise error
         except Exception as error:
-            await asyncio.sleep(delay=7)
+            logger.error(error)
+            raise error
+            # await asyncio.sleep(delay=7)
 
 
 if __name__ == '__main__':

@@ -37,7 +37,22 @@ function getMyIp() {
 async function getIdByUsername(username) {
     const ip = getMyIp();
     console.log('%s | Getting username id', username);
-    const id = await fetch('http://127.0.0.1:8080/username/' + username).then(response => response.json());
+
+    let id = -1;
+    try {
+        id = await fetch('http://127.0.0.1:8080/username/' + username).then(response => response.json());
+        id = parseInt(id);
+    }
+    catch (e) {
+        console.error(e);
+        return -1;
+    }
+
+    if(id < 0) {
+        console.log('%s | Cannot get ID for username %s', username, username);
+        return -1;
+    }
+
     console.log('%s | Username %s id is', username, username, id);
     return id;
 }
@@ -155,7 +170,7 @@ class Miner {
             await self.hub.invoke('CheckNewsPressed', self.userId);
         }
 
-        await self.processNextPhase(self, data, 'INIT');
+        await self.processNextPhase(self, data, PHASES.INIT);
     }
 
     async upgradeSpeedIfPossible(self) {
@@ -304,7 +319,7 @@ class Miner {
         console.log('%s | Starting miner', this.username);
         const id = await getIdByUsername(this.username);
         if(id < 0) {
-            console.error('Cannot get username %s id, exiting', this.username);
+            console.error('Cannot get username %s id, exiting miner', this.username);
             return;
         }
 
