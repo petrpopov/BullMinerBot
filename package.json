@@ -1,13 +1,13 @@
 {
-  "name": "bulltest",
+  "name": "bullrun",
   "version": "1.0.0",
   "description": "",
-  "main": "hello.js",
+  "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Petr Popov",
+  "license": "MIT",
   "dependencies": {
     "axios": "^1.7.2",
     "@expo/spawn-async": "github:expo/spawn-async",
