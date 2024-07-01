@@ -4,12 +4,11 @@ LABEL authors="petrpopov"
 WORKDIR app/
 
 COPY server/requirements.txt requirements.txt
-COPY package.json package.json
 
 RUN pip3 install --upgrade pip setuptools wheel
 RUN pip3 install --no-warn-script-location --no-cache-dir -r requirements.txt
-RUN npm install
 
 COPY . .
+RUN npm install --verbose
 
 CMD ["node", "main.js"]
