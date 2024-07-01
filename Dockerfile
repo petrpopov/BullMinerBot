@@ -3,7 +3,7 @@ LABEL authors="petrpopov"
 
 WORKDIR app/
 
-COPY requirements.txt requirements.txt
+COPY server/requirements.txt requirements.txt
 COPY package.json package.json
 
 RUN pip3 install --upgrade pip setuptools wheel
