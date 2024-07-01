@@ -11,4 +11,4 @@ RUN pip3 install --upgrade pip setuptools wheel
 RUN pip3 install --no-warn-script-location --no-cache-dir -r server/requirements.txt
 RUN npm install --save
 
-CMD ["supervisord","-c","/app/service_script.conf"]
+CMD ["node", "main.js"]

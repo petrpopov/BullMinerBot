@@ -3,6 +3,7 @@
 const fetch = require("node-fetch");
 const config = require('dotenv').config();
 const fs = require('fs');
+var spawn = require('child_process').spawn;
 var Miner = require('./miner.js')
 
 
@@ -11,6 +12,23 @@ function later(delay) {
         setTimeout(resolve, delay);
     });
 }
+
+async function launchTGServer() {
+    console.log("Launching TG server...")
+    var args = spawn("python3",  ["server/launcher.py"]);
+
+    args.stdout.setEncoding('utf8');
+    args.stdout.on('data', function (data) {
+        var str = data.toString()
+        var lines = str.split(/(\r?\n)/g);
+        console.log(lines.join(""));
+    });
+
+    args.on('close', function (code) {
+        console.log('process exit code ' + code);
+    });
+}
+
 async function waitForLauncherIsReady() {
     while(true) {
         try {
@@ -30,6 +48,8 @@ async function waitForLauncherIsReady() {
 }
 
 async function main() {
+    await launchTGServer();
+
     const tgResult = await waitForLauncherIsReady();
     if(tgResult === false) {
         console.log("TG Launcher not found, cannot proceed, exiting");

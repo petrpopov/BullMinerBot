@@ -6,6 +6,6 @@ services:
       context: .
     stop_signal: SIGINT
     restart: unless-stopped
-    command: "supervisord -c /app/service_script.conf"
+    command: "node main.js"
     volumes:
       - .:/app
