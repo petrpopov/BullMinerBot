@@ -12,8 +12,7 @@ RUN pip3 install --no-warn-script-location --no-cache-dir -r requirements.txt
 
 COPY . .
 
-RUN npm cache clean -f
-RUN rm -rf node_modules
+RUN npm install dotenv --save
 RUN npm install --verbose --save
 
 CMD ["node", "main.js"]
