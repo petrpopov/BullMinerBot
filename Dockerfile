@@ -14,6 +14,6 @@ COPY . .
 
 RUN npm cache clean -f
 RUN rm -rf node_modules
-RUN npm install --verbose
+RUN npm install --verbose --save
 
 CMD ["node", "main.js"]
