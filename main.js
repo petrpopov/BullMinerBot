@@ -1,9 +1,9 @@
 'use strict';
 
-const fetch = require("node-fetch");
 const config = require('dotenv').config();
 const fs = require('fs');
-var spawn = require('child_process').spawn;
+const spawn = require('child_process').spawn;
+const axios = require('axios');
 var Miner = require('./miner.js')
 
 
@@ -32,8 +32,9 @@ async function launchTGServer() {
 async function waitForLauncherIsReady() {
     while(true) {
         try {
-            const res = await fetch('http://127.0.0.1:8080').then(response => response.text());
-            if(res === 'Hello, World!') {
+            const {data} = await axios.get("http://127.0.0.1:8080");
+            // const res = await fetch('http://127.0.0.1:8080').then(response => response.text());
+            if(data === 'Hello, World!') {
                 return true;
             } else {
                 console.log('Unknown response from TG Launcher, cannot proceed');

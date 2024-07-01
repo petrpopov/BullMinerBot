@@ -1,6 +1,6 @@
 'use strict';
 
-const fetch = require("node-fetch");
+const axios = require('axios');
 const signalR = require("@microsoft/signalr");
 const { networkInterfaces } = require('os');
 
@@ -40,8 +40,9 @@ async function getIdByUsername(username) {
 
     let id = -1;
     try {
-        id = await fetch('http://127.0.0.1:8080/username/' + username).then(response => response.json());
-        id = parseInt(id);
+        const {data} = await axios.get('http://127.0.0.1:8080/username/' + username);
+        // id = await fetch('http://127.0.0.1:8080/username/' + username).then(response => response.json());
+        id = parseInt(data);
     }
     catch (e) {
         console.error(e);
@@ -59,7 +60,8 @@ async function getIdByUsername(username) {
 
 async function getProxyByUsername(username) {
     try {
-        const proxy = await fetch('http://127.0.0.1:8080/proxy/' + username).then(response => response.json());
+        const {proxy} = await axios.get('http://127.0.0.1:8080/proxy/' + username);
+        // const proxy = await fetch('http://127.0.0.1:8080/proxy/' + username).then(response => response.json());
         return proxy;
     } catch (e) {
         console.error(e);
@@ -326,6 +328,9 @@ class Miner {
         const proxy = await getProxyByUsername(this.username);
         if (typeof proxy === 'string' || proxy instanceof String) {
             console.log("%s | Proxy not found for account", this.username)
+        }
+        else if(!proxy) {
+            console.log("%s | Proxy is empty", this.username)
         }
         else {
             const proxyString = proxy.scheme + "://" + proxy.hostname + ":" + proxy.port;
