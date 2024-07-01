@@ -5,7 +5,9 @@ WORKDIR app/
 
 COPY server/requirements.txt requirements.txt
 
-RUN pip3 install --upgrade pip setuptools wheel git
+RUN apk update
+RUN apk --update add nano vim curl wget links git
+RUN pip3 install --upgrade pip setuptools wheel
 RUN pip3 install --no-warn-script-location --no-cache-dir -r requirements.txt
 
 COPY . .
